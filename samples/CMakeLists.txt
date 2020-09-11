@@ -64,21 +64,9 @@ install(
   DESTINATION ${CMAKE_INSTALL_DATADIR}/openenclave/samples
   COMPONENT OEHOSTVERIFY)
 
-if (WIN32)
   install(
-    FILES README_Windows.md
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/openenclave/samples
-    RENAME README.md)
-else ()
-  install(
-    FILES config.mk
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/openenclave/samples
-    COMPONENT OEHOSTVERIFY)
-  install(
-    FILES README_Linux.md
-    DESTINATION ${CMAKE_INSTALL_DATADIR}/openenclave/samples
-    RENAME README.md)
-endif ()
+    FILES README.md BuildSamplesWindows.md BuildSamplesLinux.md
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/openenclave/samples)
 
 if (WIN32)
   add_test(
