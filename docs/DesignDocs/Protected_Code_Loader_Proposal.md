@@ -82,8 +82,13 @@ We can also refer to Open Enclave's current data-sealing sample.
 
 
 
-## APIs and libs
-oe_create_encrypted_enclave(const char *file_name)
+## new arguments, APIs and libs
+No new API is needed.
+A new setting is defined in include/openenclave/host.h as the argument to support
+protected code loader enclave loading in API oe_create_enclave.
+uint8_t *sealed_blob is defined as new member for each instance oe_enclave_t.
+oe_enclave_ecall_ms_t is defined as the arg_in of ecall on the 1st time of initializing an encrypted
+enclave.
 
 
 ## Debugging consideration when user launches an Encrypted Enclave
