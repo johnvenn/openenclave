@@ -19,10 +19,17 @@ When user builds their enclave image, the Open Enclave Protected Code Loader
 provides an encryption tool to encrypt the ELF file before the encalve image
 gets signed. 
 User should deliver an encryption key to the encryption tool for encrypting.
+**** TO be done****
+add encryption command line here
+
+
 Enclave Load-time:
 On Enclave Load time, if the image is encrypted, it need to be decrypted 
 inside enclave loader, this step is invisible to user. But the decryption 
 key is required for the enclave loader to decrypt the encrypted enclave. 
+**** To be done *****
+add decryption flow here
+
 
 # Specification
 
@@ -68,7 +75,7 @@ typedef struct pcl_table_t_
 
 ## Encryption Algorithms in Protected Code Loader
 Using AES-128-GCM as the encryption/decryption algorithm, currently from openssl lib,
-upon enclave loading, using sgx-ssl lib
+upon enclave loading, may consider switch to mbedtls lib in OE SDK.
 
 ## Deliver the Encryption Key in a secure way
 On protecting the IP sections in enclave image, a key is required for encryption in the host and for 
@@ -79,9 +86,6 @@ we can provide an open feed for the ISVs to feed their own sealing/unsealing fun
 encryption tool and decryption part in enclave. This need to be considered in another seperate topic. 
 We can also refer to Open Enclave's current data-sealing sample. 
 
-
-
-
 ## new arguments, APIs and libs
 No new API is needed.
 A new setting is defined in include/openenclave/host.h as the argument to support
@@ -89,7 +93,6 @@ protected code loader enclave loading in API oe_create_enclave.
 uint8_t *sealed_blob is defined as new member for each instance oe_enclave_t.
 oe_enclave_ecall_ms_t is defined as the arg_in of ecall on the 1st time of initializing an encrypted
 enclave.
-
 
 ## Debugging consideration when user launches an Encrypted Enclave
 
