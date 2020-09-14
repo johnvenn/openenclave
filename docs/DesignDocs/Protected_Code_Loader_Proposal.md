@@ -19,6 +19,10 @@ When user builds their enclave image, the Open Enclave Protected Code Loader
 provides an encryption tool to encrypt the ELF file before the encalve image
 gets signed. 
 User should deliver an encryption key to the encryption tool for encrypting.
+
+In enclave make file, the enclave should link to a static lib "liboepcl.a",
+and then using oeenrypt tool to encrypt the enclave image right before
+signing process.
 **** TO be done****
 add encryption command line here
 
@@ -70,8 +74,23 @@ typedef struct pcl_table_t_
 }pcl_table_t;
 
 
-### Other sections left plaintext
-
+### Sections left plaintext
+1. ELF header  - binary header
+2. Sections table
+3. Segments table
+4. Sections' names string table pointed by e_shstrndx(e.g. .shstrtab)
+5. .oeinfo section holds enclave's metadata(properties)
+6. .bss and .tbss
+7. sections required to construct dyn_info (.dynamic)
+8. sections holds the content provided by entries with index DT_SYMTAB, DT_STRTAB and DT_REL in
+   dyn_info (e.g. .dynsym, .dynstr, .rela.dyn)
+9. sections containing PCL code and data:
+   a. section ".pcltbl"  // Designated section for PCL table
+   b. .nipx, .nipd, .niprod, .nipd_rel, .nipd_rel_ro_local(******to be verified*****)
+10. sections for debugging
+   .comment, .debug_abbrev, .debug_aranges, .debug_info, .debug_line, .debug_lc, .debug_ranges,
+   .debug_str
+   compiler.version_d?(****** to be verified ******)
 
 ## Encryption Algorithms in Protected Code Loader
 Using AES-128-GCM as the encryption/decryption algorithm, currently from openssl lib,
@@ -87,15 +106,37 @@ encryption tool and decryption part in enclave. This need to be considered in an
 We can also refer to Open Enclave's current data-sealing sample. 
 
 ## new arguments, APIs and libs
+### Encryption tool
+new tool for ELF image encryption - oeencrypt: placed in OESDK installation folder as the bin files
+new lib for section ".pcltbl" and decryption -- liboepcl.a: placed in OESDK installation folderd
+as the lib files
+
+### Modifications to OE SDK runtime lib
 No new API is needed.
 A new setting is defined in include/openenclave/host.h as the argument to support
 protected code loader enclave loading in API oe_create_enclave.
 uint8_t *sealed_blob is defined as new member for each instance oe_enclave_t.
 oe_enclave_ecall_ms_t is defined as the arg_in of ecall on the 1st time of initializing an encrypted
 enclave.
+new lib for section ".pcltbl" and decryption -- liboepcl.a: placed in OESDK installation folderd
+as the lib files
+
+### PCL Sample Code
+A Sample Code project will be provided in samples for how to use Protected Code Loader.
 
 ## Debugging consideration when user launches an Encrypted Enclave
+Debugging with oegdb should work reguarly with a minor disclaimer: you can insert break points in
+the IP code but these breakpoints in IP code must be disabled while the Protected Code Loader is
+running.
+Problem description: When User adds a breakpoint oegdb modifies the code, if modification is
+inside the cipher-text binary then when AES-GCM is applied the tag result will not match.
 
+After PCL flow is done, breakpoints can be added and debuuging can continue regularly.
+
+Solution: ISV should be able to choose when host attaches the debugger:
+1. Default: debugger shall be attached after PCL flow is done.
+2. For PCL and early trusted runtime development: debugger shall be attached before the first
+instruction inside an enclave
 
 
 # Alternatives
