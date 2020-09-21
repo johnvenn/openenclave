@@ -113,16 +113,20 @@ as the lib files
 
 ### Modifications to OE SDK runtime lib
 No new API is needed.
-A new setting is defined in include/openenclave/host.h as the argument to support
+1. A new setting is defined in include/openenclave/host.h as the argument to support
 protected code loader enclave loading in API oe_create_enclave.
-uint8_t *sealed_blob is defined as new member for each instance oe_enclave_t.
-oe_enclave_ecall_ms_t is defined as the arg_in of ecall on the 1st time of initializing an encrypted
+2. uint8_t *sealed_blob is defined as new member for each instance oe_enclave_t.
+3. oe_enclave_ecall_ms_t is defined as the arg_in of ecall on the 1st time of initializing an encrypted
 enclave.
-new lib for section ".pcltbl" and decryption -- liboepcl.a: placed in OESDK installation folderd
+4. new lib for section ".pcltbl" and decryption -- liboepcl.a: placed in OESDK installation folderd
 as the lib files
+5. new error code define for oe_create_enclave on creating encrypted enclave
+
+
 
 ### PCL Sample Code
 A Sample Code project will be provided in samples for how to use Protected Code Loader.
+
 
 ## Debugging consideration when user launches an Encrypted Enclave
 Debugging with oegdb should work reguarly with a minor disclaimer: you can insert break points in
