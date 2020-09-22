@@ -11,6 +11,7 @@ add_custom_command(
     ${OE_INCLUDEDIR}/openenclave/edl/sgx)
 
 add_executable(enclave enc.c ${CMAKE_CURRENT_BINARY_DIR}/helloworld_t.c)
+set(PCL_LIB "openenclave::oepcl")
 
 if (WIN32)
   maybe_build_using_clangw(enclave)
@@ -28,5 +29,7 @@ if (LVI_MITIGATION MATCHES ControlFlow)
   target_link_libraries(enclave openenclave::oeenclave-lvi-cfg
                         openenclave::oelibc-lvi-cfg)
 else ()
-  target_link_libraries(enclave openenclave::oeenclave openenclave::oelibc)
+  target_link_libraries(
+    enclave -Wl,--whole-archive ${PCL_LIB} -Wl,--no-whole-archive
+    openenclave::oeenclave openenclave::oelibc)
 endif ()

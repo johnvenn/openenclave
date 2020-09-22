@@ -31,6 +31,7 @@ void host_helloworld()
     fprintf(stdout, "Enclave called into host to print: Hello World!\n");
 }
 
+uint8_t sealed_blob[16];
 int main(int argc, const char* argv[])
 {
     oe_result_t result;
@@ -50,9 +51,9 @@ int main(int argc, const char* argv[])
         goto exit;
     }
 
-    uint8_t* sealed_blob = NULL;
     FILE* fsealp = fopen("sealed_key.bin", "rb");
     size_t sealed_blob_size = 0;
+    size_t read_num = 0;
     if (NULL != fsealp)
     {
         // Read file size:
@@ -60,13 +61,11 @@ int main(int argc, const char* argv[])
         sealed_blob_size = ftell(fsealp);
         fseek(fsealp, 0L, SEEK_SET);
         // Read file into buffer:
-        sealed_blob = new uint8_t[sealed_blob_size];
         read_num = fread(sealed_blob, 1, sealed_blob_size, fsealp);
         if (read_num != sealed_blob_size)
         {
-            delete[] sealed_blob;
-            sealed_blob = NULL;
             printf("Warning: Failed to read sealed blob.\n");
+            goto exit;
         }
     }
     // file operations to read the sealed blob
