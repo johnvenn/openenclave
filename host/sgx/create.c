@@ -996,6 +996,15 @@ oe_result_t oe_create_enclave(
             break;
         }
 #endif
+	for (size_t i = 0; i < setting_count; i++)
+        if (settings[i].setting_type == OE_ENCLAVE_SETTING_PCL)
+        {
+            enclave->sealed_blob = sealed_blob;
+            break;
+        } else
+		{
+			enclave->sealed_blob = NULL;
+		}
 
     /* Build the enclave */
     OE_CHECK(oe_sgx_build_enclave(&context, enclave_path, NULL, enclave));
