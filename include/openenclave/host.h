@@ -90,6 +90,7 @@ typedef void (*oe_ocall_func_t)(
  */
 typedef enum _oe_enclave_setting_type
 {
+	OE_ENCLAVE_SETTING_PCL = 0xac120002,
     OE_ENCLAVE_SETTING_CONTEXT_SWITCHLESS = 0xdc73a628,
 #ifdef OE_WITH_EXPERIMENTAL_EEID
     OE_EXTENDED_ENCLAVE_INITIALIZATION_DATA = 0x976a8f66,
@@ -135,6 +136,8 @@ typedef struct _oe_enclave_setting
         oe_eeid_t* eeid;
 #endif
         /* Add new setting types here. */
+		/* for protected code loader */
+		uint8_t* sealed_blob;
     } u;
 } oe_enclave_setting_t;
 
