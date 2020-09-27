@@ -424,10 +424,17 @@ static oe_result_t _initialize_enclave(oe_enclave_t* enclave)
     oe_result_t result = OE_UNEXPECTED;
     uint64_t result_out = 0;
 
-    OE_CHECK(oe_ecall(
-        enclave, OE_ECALL_INIT_ENCLAVE, (uint64_t)enclave, &result_out));
-
-    if (result_out > OE_UINT32_MAX)
+	if (enclave->sealed_blob)
+	{
+		oe_sgx_ecall_ms_t arg_ms =
+		{(uint64_t)enclave, (uint64_t)(enclave->sealed_blob)};
+		OE_CHECK(oe_ecall(
+			enclave, OE_ECALL_INIT_ENCLAVE, (uint64_t)&arg_ms, &result_out));
+	} else {
+		OE_CHECK(oe_ecall(
+			enclave, OE_ECALL_INIT_ENCLAVE, (uint64_t)enclave, &result_out));
+	}
+	if (result_out > OE_UINT32_MAX)
         OE_RAISE(OE_FAILURE);
 
     if (!oe_is_valid_result((uint32_t)result_out))
