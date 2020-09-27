@@ -26,6 +26,7 @@
 #include <openenclave/internal/trace.h>
 #include <openenclave/internal/types.h>
 #include <openenclave/internal/utils.h>
+#include <openenclave/internal/pcl_common.h>
 #include "../../../common/sgx/sgxmeasure.h"
 #include "../../sgx/report.h"
 #include "../atexit.h"
@@ -45,6 +46,8 @@ oe_result_t __oe_enclave_status = OE_OK;
 uint8_t __oe_initialized = 0;
 
 extern bool oe_disable_debug_malloc_check;
+
+extern oe_result_t pcl_entry(void* enclave_base,void* ms) __attribute__((weak));
 
 /*
 **==============================================================================
@@ -887,9 +890,25 @@ void __oe_handle_main(
     oe_code_t code = oe_get_code_from_call_arg1(arg1);
     uint16_t func = oe_get_func_from_call_arg1(arg1);
     uint16_t arg1_result = oe_get_result_from_call_arg1(arg1);
-    uint64_t arg_in = arg2;
     *output_arg1 = 0;
     *output_arg2 = 0;
+
+    uint64_t arg_in = 0;
+
+    if ((func == OE_ECALL_INIT_ENCLAVE) && NULL != pcl_entry)
+	{
+		oe_sgx_ecall_ms_t *arg_in1 = (oe_sgx_ecall_ms_t *)arg2;
+		arg_in = arg_in1->arg1; // enclave_base addr
+		uint8_t *sealed_blob = (uint8_t *)arg_in1->sealed_blob;
+		if (sealed_blob) {
+			OE_TRACE_INFO("sealed blob is %s\n",  sealed_blob);
+		}
+		//pcl_entry();
+		// need to first decrypt the encrypted ip sections in ELF image
+	} else {
+		arg_in = arg2;
+	}
+
 
     // Block enclave enter based on current enclave status.
     switch (__oe_enclave_status)
