@@ -57,6 +57,16 @@ foreach( sourcefile IN LISTS PCL_SRC_LIST )
 		COMMAND ${CMAKE_OBJCOPY} ${src_obj} --rename-section .rodata=${NIPRODT})
 endforeach( sourcefile )
 
+foreach( sourcefile IN LISTS PCL_ASM_SRC )
+	string( REPLACE ".s" ".o" src_obj ${sourcefile} )
+	add_custom_command(
+		TARGET oepcl
+		POST_BUILD
+		COMMAND ${CMAKE_OBJCOPY} ${src_obj} --rename-section .text=${NIPX}
+		COMMAND ${CMAKE_OBJCOPY} ${src_obj} --rename-section .data=${NIPD}
+		COMMAND ${CMAKE_OBJCOPY} ${src_obj} --rename-section .rodata=${NIPRODT})
+endforeach( sourcefile )
+
 enclave_enable_code_coverage(oepcl)
 
 #enclave_link_libraries(oepcl PUBLIC oembedtls)
