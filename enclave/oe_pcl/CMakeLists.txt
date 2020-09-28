@@ -10,48 +10,58 @@ set(NIPRODT ".niprod")
 
 #just as in Makefile
 
-set(PCL_OBJ_FILES "pcl_entry.c.o" "pcl_mem.c.o")
+file(GLOB PCL_ASM_SRC "crypto/*.s")
+file(GLOB PCL_CRYPTO_SRC "crypto/*.c")
+#file(GLOB PCL_UNSEAL_SRC "unseal/*.c")
+set(PCL_SRC_LIST pcl_entry.c)
+list(APPEND PCL_SRC_LIST
+	pcl_mem.c
+	${PCL_CRYPTO_SRC}
+	${PCL_ASM_SRC}
+	#	${PCL_UNSEAL_SRC}
+	)
+#set(PCL_OBJ_FILES "pcl_entry.c.o" "pcl_mem.c.o")
 
 set(PCL_OBJ_DIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/oepcl.dir)
-set(PCL_ENTRY_OBJ ${PCL_OBJ_DIR}/pcl_entry.c.o)
+#set(PCL_ENTRY_OBJ ${PCL_OBJ_DIR}/pcl_entry.c.o)
 
-set(PCL_MEM_OBJ ${PCL_OBJ_DIR}/pcl_mem.c.o)
+#set(PCL_MEM_OBJ ${PCL_OBJ_DIR}/pcl_mem.c.o)
 
 # add target
 add_enclave_library(oepcl STATIC pcl_entry.c pcl_mem.c)
 #custom command output --> .c.o files and rename-section to nipx nipd
-add_custom_command(
-  TARGET oepcl
-  POST_BUILD
-  COMMAND ${CMAKE_OBJCOPY} ${PCL_ENTRY_OBJ} --rename-section .text=${NIPX}
-  COMMAND ${CMAKE_OBJCOPY} ${PCL_ENTRY_OBJ} --rename-section .data=${NIPD}
-  COMMAND ${CMAKE_OBJCOPY} ${PCL_ENTRY_OBJ} --rename-section .rodata=${NIPRODT})
+#add_custom_command(
+#  TARGET oepcl
+#  POST_BUILD
+#  COMMAND ${CMAKE_OBJCOPY} ${PCL_ENTRY_OBJ} --rename-section .text=${NIPX}
+#  COMMAND ${CMAKE_OBJCOPY} ${PCL_ENTRY_OBJ} --rename-section .data=${NIPD}
+#  COMMAND ${CMAKE_OBJCOPY} ${PCL_ENTRY_OBJ} --rename-section .rodata=${NIPRODT})
 
-add_custom_command(
-  TARGET oepcl
-  POST_BUILD
-  COMMAND ${CMAKE_OBJCOPY} ${PCL_MEM_OBJ} --rename-section .text=${NIPX}
-  COMMAND ${CMAKE_OBJCOPY} ${PCL_MEM_OBJ} --rename-section .data=${NIPD}
-  COMMAND ${CMAKE_OBJCOPY} ${PCL_MEM_OBJ} --rename-section .rodata=${NIPRODT})
+#add_custom_command(
+#  TARGET oepcl
+#  POST_BUILD
+#  COMMAND ${CMAKE_OBJCOPY} ${PCL_MEM_OBJ} --rename-section .text=${NIPX}
+#  COMMAND ${CMAKE_OBJCOPY} ${PCL_MEM_OBJ} --rename-section .data=${NIPD}
+#  COMMAND ${CMAKE_OBJCOPY} ${PCL_MEM_OBJ} --rename-section .rodata=${NIPRODT})
 
 enclave_include_directories(oepcl PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 enclave_link_libraries(oepcl PUBLIC oe_includes)
 
-#foreach( sourcefile IN LISTS SRC_LISTS )
-#	string( REPLACE ".c" ".c.o" src_obj ${sourcefile} )
-#	add_executable( ${src_obj} ${sourcefile} )
-#	add_custom_target(${src_obj}
-#		COMMAND ${COBJCOPY} $@ --rename-section .text=${NIPX}
-#		COMMAND	${COBJCOPY} $@ --rename-section .data=${NIPD}
-#		COMMAND	${COBJCOPY} $@ --rename-section .rodata=${NIPRODT}
-#				)
-#endforeach( sourcefile )
+foreach( sourcefile IN LISTS PCL_SRC_LIST )
+	string( REPLACE ".c" ".c.o" src_obj ${sourcefile} )
+	add_custom_command(
+		TARGET oepcl
+		POST_BUILD
+		COMMAND ${CMAKE_OBJCOPY} ${src_obj} --rename-section .text=${NIPX}
+		COMMAND ${CMAKE_OBJCOPY} ${src_obj} --rename-section .data=${NIPD}
+		COMMAND ${CMAKE_OBJCOPY} ${src_obj} --rename-section .rodata=${NIPRODT})
+endforeach( sourcefile )
 
-#enclave_enable_code_coverage(oepcl)
+enclave_enable_code_coverage(oepcl)
 
 #enclave_link_libraries(oepcl PUBLIC oembedtls)
-#enclave_include_directories(oepcl PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-#enclave_link_libraries(oepcl PUBLIC oe_includes)
+enclave_include_directories(oepcl PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+enclave_link_libraries(oepcl PUBLIC oe_includes)
 
 if (OE_SGX)
   enclave_compile_options(
