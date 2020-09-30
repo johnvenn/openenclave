@@ -14,7 +14,7 @@ file(GLOB PCL_ASM_SRC "crypto/*.s")
 file(GLOB PCL_CRYPTO_SRC "crypto/*.c")
 #file(GLOB PCL_UNSEAL_SRC "unseal/*.c")
 set(PCL_SRC_LIST pcl_entry.c)
-list(APPEND PCL_SRC_LIST
+list(APPEND PCL_SRC_LIST 
 	pcl_mem.c
 	${PCL_CRYPTO_SRC}
 	${PCL_ASM_SRC}
@@ -28,7 +28,11 @@ set(PCL_OBJ_DIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/oepcl.dir)
 #set(PCL_MEM_OBJ ${PCL_OBJ_DIR}/pcl_mem.c.o)
 
 # add target
-add_enclave_library(oepcl STATIC pcl_entry.c pcl_mem.c)
+add_enclave_library(
+	oepcl 
+	STATIC
+	${PCL_SRC_LIST}
+	)
 #custom command output --> .c.o files and rename-section to nipx nipd
 #add_custom_command(
 #  TARGET oepcl
@@ -44,7 +48,11 @@ add_enclave_library(oepcl STATIC pcl_entry.c pcl_mem.c)
 #  COMMAND ${CMAKE_OBJCOPY} ${PCL_MEM_OBJ} --rename-section .data=${NIPD}
 #  COMMAND ${CMAKE_OBJCOPY} ${PCL_MEM_OBJ} --rename-section .rodata=${NIPRODT})
 
-enclave_include_directories(oepcl PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+enclave_include_directories(oepcl 
+	PRIVATE
+	${CMAKE_CURRENT_BINARY_DIR}
+	${PROJECT_SOURCE_DIR}/3rdparty/openssl/openssl/include
+	${PROJECT_SOURCE_DIR}/3rdparty/openssl)
 enclave_link_libraries(oepcl PUBLIC oe_includes)
 
 foreach( sourcefile IN LISTS PCL_SRC_LIST )
@@ -52,9 +60,9 @@ foreach( sourcefile IN LISTS PCL_SRC_LIST )
 	add_custom_command(
 		TARGET oepcl
 		POST_BUILD
-		COMMAND ${CMAKE_OBJCOPY} ${src_obj} --rename-section .text=${NIPX}
-		COMMAND ${CMAKE_OBJCOPY} ${src_obj} --rename-section .data=${NIPD}
-		COMMAND ${CMAKE_OBJCOPY} ${src_obj} --rename-section .rodata=${NIPRODT})
+		COMMAND ${CMAKE_OBJCOPY} ${PCL_OBJ_DIR}/${src_obj} --rename-section .text=${NIPX}
+		COMMAND ${CMAKE_OBJCOPY} ${PCL_OBJ_DIR}/${src_obj} --rename-section .data=${NIPD}
+		COMMAND ${CMAKE_OBJCOPY} ${PCL_OBJ_DIR}/${src_obj} --rename-section .rodata=${NIPRODT})
 endforeach( sourcefile )
 
 foreach( sourcefile IN LISTS PCL_ASM_SRC )
@@ -62,16 +70,16 @@ foreach( sourcefile IN LISTS PCL_ASM_SRC )
 	add_custom_command(
 		TARGET oepcl
 		POST_BUILD
-		COMMAND ${CMAKE_OBJCOPY} ${src_obj} --rename-section .text=${NIPX}
-		COMMAND ${CMAKE_OBJCOPY} ${src_obj} --rename-section .data=${NIPD}
-		COMMAND ${CMAKE_OBJCOPY} ${src_obj} --rename-section .rodata=${NIPRODT})
+		COMMAND ${CMAKE_OBJCOPY} ${PCL_OBJ_DIR}/${src_obj} --rename-section .text=${NIPX}
+		COMMAND ${CMAKE_OBJCOPY} ${PCL_OBJ_DIR}/${src_obj} --rename-section .data=${NIPD}
+		COMMAND ${CMAKE_OBJCOPY} ${PCL_OBJ_DIR}/${src_obj} --rename-section .rodata=${NIPRODT})
 endforeach( sourcefile )
 
-enclave_enable_code_coverage(oepcl)
+#enclave_enable_code_coverage(oepcl)
 
 #enclave_link_libraries(oepcl PUBLIC oembedtls)
-enclave_include_directories(oepcl PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-enclave_link_libraries(oepcl PUBLIC oe_includes)
+#enclave_include_directories(oepcl PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+#enclave_link_libraries(oepcl PUBLIC oe_includes)
 
 if (OE_SGX)
   enclave_compile_options(
