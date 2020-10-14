@@ -140,7 +140,17 @@ const char* oe_result_str(oe_result_t result)
             return "OE_INVALID_IMAGE";
         case OE_QUOTE_LIBRARY_LOAD_ERROR:
             return "OE_QUOTE_LIBRARY_LOAD_ERROR";
-        case __OE_RESULT_MAX:
+		case OE_ERROR_PCL_ENCRYPTED:
+			return "OE_ERROR_PCL_ENCRYPTED";
+		case OE_ERROR_PCL_NON_ENCRYPTED:
+            return "OE_ERROR_PCL_NON_ENCRYPTED";
+		case OE_ERROR_PCL_MAC_MISMATCH:
+            return "OE_ERROR_PCL_MAC_MISMATCH";
+		case OE_ERROR_PCL_SHA_MISMATCH:
+            return "OE_ERROR_PCL_SHA_MISMASTCH";
+		case OE_ERROR_PCL_GUID_MISMATCH:
+            return "OE_ERROR_PCL_GUID_MISMATCH";
+		case __OE_RESULT_MAX:
             break;
     }
 
@@ -213,7 +223,12 @@ bool oe_is_valid_result(uint32_t result)
         case OE_INVALID_SGX_SIGNING_KEY:
         case OE_INVALID_IMAGE:
         case OE_QUOTE_LIBRARY_LOAD_ERROR:
-        {
+        case OE_ERROR_PCL_ENCRYPTED:
+        case OE_ERROR_PCL_NON_ENCRYPTED:
+        case OE_ERROR_PCL_MAC_MISMATCH:
+        case OE_ERROR_PCL_SHA_MISMATCH:
+        case OE_ERROR_PCL_GUID_MISMATCH:
+		{
             return true;
         }
         case __OE_RESULT_MAX:
