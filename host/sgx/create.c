@@ -424,8 +424,16 @@ static oe_result_t _initialize_enclave(oe_enclave_t* enclave)
     oe_result_t result = OE_UNEXPECTED;
     uint64_t result_out = 0;
 
-    OE_CHECK(oe_ecall(
-        enclave, OE_ECALL_INIT_ENCLAVE, (uint64_t)enclave, &result_out));
+	if (enclave->sealed_blob)
+	{
+		oe_sgx_ecall_ms_t arg_ms =
+		{(uint64_t)enclave, (uint64_t)(enclave->sealed_blob)};
+		OE_CHECK(oe_ecall(
+			enclave, OE_ECALL_INIT_ENCLAVE, (uint64_t)&arg_ms, &result_out));
+	} else {
+		OE_CHECK(oe_ecall(
+			enclave, OE_ECALL_INIT_ENCLAVE, (uint64_t)enclave, &result_out));
+	}
 
     if (result_out > OE_UINT32_MAX)
         OE_RAISE(OE_FAILURE);
@@ -990,8 +998,19 @@ oe_result_t oe_create_enclave(
         }
 #endif
 
-    /* Build the enclave */
-    OE_CHECK(oe_sgx_build_enclave(&context, enclave_path, NULL, enclave));
+	for (size_t i = 0; i < setting_count; i++)
+	{  
+		if (settings[i].setting_type == OE_ENCLAVE_SETTING_PCL)
+        {
+            enclave->sealed_blob = sealed_blob;
+            break;
+        } else
+		{
+			enclave->sealed_blob = NULL;
+		}    /* Build the enclave */
+	}
+
+	OE_CHECK(oe_sgx_build_enclave(&context, enclave_path, NULL, enclave));
 
     /* Push the new created enclave to the global list. */
     if (oe_push_enclave_instance(enclave) != 0)
