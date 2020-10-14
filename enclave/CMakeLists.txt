@@ -5,6 +5,11 @@ add_subdirectory(core)
 add_subdirectory(crypto)
 
 if (OE_SGX)
+add_subdirectory(oe_pcl)
+endif ()
+
+
+if (OE_SGX)
   set(PLATFORM_SRC
       ../common/sgx/endorsements.c
       ../common/sgx/qeidentity.c
