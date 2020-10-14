@@ -113,7 +113,10 @@ typedef struct _oe_enclave
     /* Hash of enclave (MRENCLAVE) */
     OE_SHA256 hash;
 
-    /* Array of ocall functions */
+	/* Sealed Blob for OE PCL */
+	uint8_t* sealed_blob;  
+	
+	/* Array of ocall functions */
     const oe_ocall_func_t* ocalls;
     size_t num_ocalls;
 
