@@ -372,7 +372,37 @@ typedef enum _oe_result
      */
     OE_QUOTE_LIBRARY_LOAD_ERROR,
 
-    __OE_RESULT_MAX = OE_ENUM_MAX,
+/**
+	 * Error Code: Protected Code Loader
+	 * oe_create_enclave can't open encrypted enclave
+	 */
+	OE_ERROR_PCL_ENCRYPTED,
+
+	/**
+	 * Error Code: Protected Code Loader
+	 * oe_create_enclave can't open non-encrypted enclave
+	 */
+	OE_ERROR_PCL_NON_ENCRYPTED,
+
+	/**
+	 * Error Code: Protected Code Loader
+	 * PCL detected invalid section in encrypted enclave
+	 */
+	OE_ERROR_PCL_MAC_MISMATCH,
+
+	/**
+	 * Error Code: Protected Code Loader
+	 * PCL sealed key SHA mismatch
+	 */
+	OE_ERROR_PCL_SHA_MISMATCH,
+
+	/**
+	 * Error Code: Protected Code Loader
+	 * PCL sealed key GUID mismatch
+	 */
+	OE_ERROR_PCL_GUID_MISMATCH,    
+	
+	__OE_RESULT_MAX = OE_ENUM_MAX,
 } oe_result_t;
 /**< typedef enum _oe_result oe_result_t*/
 
