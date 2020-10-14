@@ -1074,6 +1074,15 @@ typedef enum _quote3_error_t {
 } quote3_error_t;
 // clang-format on
 
+#define OE_PCL
+OE_PACK_BEGIN
+typedef struct _oe_sgx_ecall_ms
+{
+    uint64_t arg1;
+    uint64_t sealed_blob;
+} oe_sgx_ecall_ms_t;
+OE_PACK_END
+
 OE_EXTERNC_END
 
 #endif /* _OE_SGXTYPES_H */
