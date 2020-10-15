@@ -1,8 +1,7 @@
 Open Enclave Protected Code Loader
 ====
 
-This design document proposes a utility of protecting IP sections in ELF file.
-
+Enabling Enclave Code Confidentiality in Open Enclave.
 
 # Motivation
 Current Open Enclave SDK provides code integrity and data confidentiality but 
