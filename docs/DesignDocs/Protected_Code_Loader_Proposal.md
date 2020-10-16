@@ -44,10 +44,6 @@ to user.
     the encrypted enclave image need to be decrypted and than perform the relocation
     operation.
 
-## Elf sections to be encrypted
-relocatable sections in ELF file
-
-
 ## ELF sections Left plaintext
 ### PCL table entry 
 A PCL table entry (a section called ".pcltbl" in ELF file)is built into the Enclave image by 
@@ -97,10 +93,12 @@ Mainly those sections are:
 4. sections containing relocation info related with the above items
 
 ## Encryption Algorithms in Protected Code Loader
-Using AES-256-GCM as the encryption/decryption algorithm, currently from openssl lib,
+TODO: Using AES-256-GCM as the encryption/decryption algorithm, currently from openssl lib,
 upon enclave loading, may consider switch to mbedtls lib in OE SDK.
 
-## Deliver the Encryption Key in a secure way
+## Sealing/Unsealing the decryption key
+To deliver the decryption key in a secure way, the key used to encrypt the enclave should get sealed
+by key policy PRODUCT
 On protecting the IP sections in enclave image, a key is required for encryption in the host and for 
 decryption in enclave. The key should be delivered in a secure way using sealing/unsealing functions 
 in host(sealing), in enclave(unsealing). ISV should be responsible for this part by themselves or obtain
