@@ -37,10 +37,8 @@ to user.
 
 ## Protected Code Loader Software Work Flow in Open Enclave
 ### Build time encryption 
-    A seperate tool is provided at enclave build time to encrypt the enclave image right
-    before signing process, this can ensure on creating and loading process, the code remain
-    as a normal enclave image is handled, also this design doesn't affect ECREATE operation by
-    sgx_common_loader 
+    A seperate tool "oeencrypt" is provided at enclave build time to encrypt 
+	the enclave image right before enclave signing process,  
 ### load time decryption
     On enclave initliazation operation(EINIT operation), right before relocation, 
     the encrypted enclave image need to be decrypted and than perform the relocation
@@ -90,8 +88,16 @@ typedef struct pcl_table_t_
    .debug_str
    compiler.version_d?(****** to be verified ******)
 
+## Elf sections to be encrypted
+Sections not mentioned above are sections containing IP information that need to be protected.
+Mainly those sections are:
+1. Code sections -- .text in elf file
+2. Data sections -- .data in elf file (initialized local/global variables)
+3. Read-only Data sections -- .rodata in elf file (const variables)
+4. sections containing relocation info related with the above items
+
 ## Encryption Algorithms in Protected Code Loader
-Using AES-128-GCM as the encryption/decryption algorithm, currently from openssl lib,
+Using AES-256-GCM as the encryption/decryption algorithm, currently from openssl lib,
 upon enclave loading, may consider switch to mbedtls lib in OE SDK.
 
 ## Deliver the Encryption Key in a secure way
