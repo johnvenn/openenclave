@@ -4,10 +4,10 @@ Open Enclave Protected Code Loader
 Enabling Enclave Code Confidentiality in Open Enclave.
 
 # Motivation
-Current Open Enclave SDK provides code integrity and data confidentiality but 
-not binary confidentiality. The signed enclave binary is in plaintext and can 
-be reverse engineered to reveal code logic and secret data embedded in the 
-enclave image. 
+Current Open Enclave SDK provides code integrity and data confidentiality at
+run-time but not binary confidentiality on a disk. The signed enclave binary
+is in plaintext and can be reverse engineered to reveal code logic and secret
+data embedded in the enclave image. 
 
 The Open Enclave Protected Code Loader shall enable providing confidentiality 
 and integrity to the IP sections in enclave image, i.e. , the ELF file.
@@ -17,26 +17,25 @@ Build-time encryption:
 When user builds their enclave image, the Open Enclave Protected Code Loader
 provides an encryption tool to encrypt the ELF file before the encalve image
 gets signed. 
-User should deliver an encryption key to the encryption tool for encrypting.
+User should deliver a decryption key to the encryption tool for encrypting.
 
 In enclave make file, the enclave should link to a static lib "liboepcl.a",
-and then using oeenrypt tool to encrypt the enclave image right before
-signing process.
-**** TO be done****
-add encryption command line here
+with a compilation option "Whole-archive", and then using oeenrypt tool to 
+encrypt the enclave image right before signing.
 
+Encrypt the enclave ELF file before oesign
+```bash
+oeencrypt -i my_enclave -o my_enclave.enc -k keyfile
+```
 
 Enclave Load-time:
-On Enclave Load time, if the image is encrypted, it need to be decrypted 
-inside enclave loader, this step is invisible to user. But the decryption 
-key is required for the enclave loader to decrypt the encrypted enclave. 
-**** To be done *****
-add decryption flow here
-
+On Enclave Loading, if the image is encrypted, it need to be decrypted 
+inside enclave loader, this step is done by OE SDK runtime and invisible 
+to user. 
 
 # Specification
 
-## Protect Code Loader Software Work Flow in Open Enclave
+## Protected Code Loader Software Work Flow in Open Enclave
 ### Build time encryption 
     A seperate tool is provided at enclave build time to encrypt the enclave image right
     before signing process, this can ensure on creating and loading process, the code remain
