@@ -99,14 +99,8 @@ Mainly those sections are:
 
 ## Sealing/Unsealing the decryption key
 To deliver the decryption key in a secure way, the key used to encrypt the enclave should get sealed
-by key policy PRODUCT
-On protecting the IP sections in enclave image, a key is required for encryption in the host and for 
-decryption in enclave. The key should be delivered in a secure way using sealing/unsealing functions 
-in host(sealing), in enclave(unsealing). ISV should be responsible for this part by themselves or obtain
-the encryption/decryption key by Open Enclave's Remote Attestation. For Protected Code Loader itself,
-we can provide an open feed for the ISVs to feed their own sealing/unsealing functions in host 
-encryption tool and decryption part in enclave. This need to be considered in another seperate topic. 
-We can also refer to Open Enclave's current data-sealing sample. 
+by key policy OE_SEAL_POLICY_PRODUCT on deliverting to Protected Code Loader for decryption in a 
+sealed_blob. The protected code loader will unseal this sealed_blob to get the decryption key. 
 
 ## new APIs and libs
 ### Encryption tool
