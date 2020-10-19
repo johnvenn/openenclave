@@ -12,23 +12,21 @@ secret data embedded in the enclave image.
 The Open Enclave Protected Code Loader shall enable providing confidentiality 
 and integrity to the IP sections in enclave image, i.e. , the ELF file.
 
+TODO: add an svg image here to describe the encryption and decryption process.
+
 # User Experience
-Build-time encryption:
-When user builds their enclave image, the Open Enclave Protected Code Loader
-provides an encryption tool to encrypt the ELF file before the encalve image
-gets signed. 
-User should deliver a decryption key to the encryption tool for encrypting.
+## Enclave Build-time:
+### Linking "liboepcl.a" to the enclave 
+On building the enclave, a static lib "liboepcl.a" should be linked to the 
+enclave image with the compilation option "-Wl, whole-archive"
+### Encrypt the enclave image
+An encryption tool is provided as the pre-step to enclave signing process:
 
-In enclave make file, the enclave should link to a static lib "liboepcl.a",
-with a compilation option "Whole-archive", and then using oeenrypt tool to 
-encrypt the enclave image right before signing.
-
-Encrypt the enclave ELF file before oesign
 ```bash
 oeencrypt -i my_enclave -o my_enclave.enc -k keyfile
 ```
 
-Enclave Load-time:
+## Enclave Load-time:
 On Enclave Loading, if the image is encrypted, it need to be decrypted 
 inside enclave loader, this step is done by OE SDK runtime and invisible 
 to user. 
