@@ -91,7 +91,7 @@ Mainly those sections are:
 4. sections containing relocation info related with the above items
 
 ## Encryption Algorithms in Protected Code Loader
-Using mbedtls AES-256-GCM as the encryption/decryption algorithm.
+Using openssl AES-256-GCM as the encryption/decryption algorithm.
 
 ## Sealing/Unsealing the decryption key
 To deliver the decryption key in a secure way, the key used to encrypt the enclave should get sealed
