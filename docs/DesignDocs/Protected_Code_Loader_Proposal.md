@@ -5,9 +5,9 @@ Enabling Enclave Code Confidentiality in Open Enclave.
 
 # Motivation
 Current Open Enclave SDK provides code integrity and data confidentiality at
-run-time but not binary confidentiality on a disk. The signed enclave binary
-is in plaintext and can be reverse engineered to reveal code logic and secret
-data embedded in the enclave image. 
+run-time but not enclave binary confidentiality on a disk. The enclave binary
+is in plaintext and can be reverse engineered to reveal code logic and
+secret data embedded in the enclave image. 
 
 The Open Enclave Protected Code Loader shall enable providing confidentiality 
 and integrity to the IP sections in enclave image, i.e. , the ELF file.
@@ -65,7 +65,6 @@ typedef struct pcl_table_t_
     rva_size_tag_iv_t rvas_sizes_tags_ivs[PCL_MAX_NUM_ENCRYPTED_SECTIONS]; // Array of rva_size_tag_iv_t
 }pcl_table_t;
 
-
 ### Sections left plaintext
 1. ELF header  - binary header
 2. Sections table
@@ -78,11 +77,10 @@ typedef struct pcl_table_t_
    dyn_info (e.g. .dynsym, .dynstr, .rela.dyn)
 9. sections containing PCL code and data:
    a. section ".pcltbl"  // Designated section for PCL table
-   b. .nipx, .nipd, .niprod, .nipd_rel, .nipd_rel_ro_local(******to be verified*****)
+   b. .nipx, .nipd, .niprod, .nipd_rel, .nipd_rel_ro_local
 10. sections for debugging
    .comment, .debug_abbrev, .debug_aranges, .debug_info, .debug_line, .debug_lc, .debug_ranges,
    .debug_str
-   compiler.version_d?(****** to be verified ******)
 
 ## Elf sections to be encrypted
 Sections not mentioned above are sections containing IP information that need to be protected.
@@ -93,8 +91,7 @@ Mainly those sections are:
 4. sections containing relocation info related with the above items
 
 ## Encryption Algorithms in Protected Code Loader
-TODO: Using AES-256-GCM as the encryption/decryption algorithm, currently from openssl lib,
-upon enclave loading, may consider switch to mbedtls lib in OE SDK.
+Using mbedtls AES-256-GCM as the encryption/decryption algorithm.
 
 ## Sealing/Unsealing the decryption key
 To deliver the decryption key in a secure way, the key used to encrypt the enclave should get sealed
@@ -117,18 +114,15 @@ as the lib files
 No new API is needed.
 1. A new setting is defined in include/openenclave/host.h as the argument to support
 protected code loader enclave loading in API oe_create_enclave.
+	
 2. uint8_t *sealed_blob is defined as new member for each instance oe_enclave_t.
 3. oe_enclave_ecall_ms_t is defined as the arg_in of ecall on the 1st time of initializing an encrypted
 enclave.
 4. new lib for section ".pcltbl" and decryption -- liboepcl.a: placed in OESDK installation folderd
 as the lib files
-5. new error code define for oe_create_enclave on creating encrypted enclave
-
-
 
 ### PCL Sample Code
 A Sample Code project will be provided in samples for how to use Protected Code Loader.
-
 
 ## Debugging consideration when user launches an Encrypted Enclave
 Debugging with oegdb should work reguarly with a minor disclaimer: you can insert break points in
@@ -143,10 +137,6 @@ Solution: ISV should be able to choose when host attaches the debugger:
 1. Default: debugger shall be attached after PCL flow is done.
 2. For PCL and early trusted runtime development: debugger shall be attached before the first
 instruction inside an enclave
-
-
-# Alternatives
-1. Open Enclave Protected Code Loader in currently implementation baked encryption into enclave image.
 
 # Authors
 
