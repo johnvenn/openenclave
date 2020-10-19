@@ -16,7 +16,7 @@ TODO: add an svg image here to describe the encryption and decryption process.
 
 # User Experience
 ## Enclave Build-time:
-### Linking "liboepcl.a" to the enclave 
+### Linking pcl lib to the enclave 
 On building the enclave, a static lib "liboepcl.a" should be linked to the 
 enclave image with the compilation option "-Wl, whole-archive"
 ### Encrypt the enclave image
@@ -109,15 +109,14 @@ new lib for section ".pcltbl" and decryption -- liboepcl.a: placed in OESDK inst
 as the lib files
 
 ### Modifications to OE SDK runtime lib
-No new API is needed.
+No new APIs exposed to user.
 1. A new setting is defined in include/openenclave/host.h as the argument to support
 protected code loader enclave loading in API oe_create_enclave.
 	
 2. uint8_t *sealed_blob is defined as new member for each instance oe_enclave_t.
 3. oe_enclave_ecall_ms_t is defined as the arg_in of ecall on the 1st time of initializing an encrypted
 enclave.
-4. new lib for section ".pcltbl" and decryption -- liboepcl.a: placed in OESDK installation folderd
-as the lib files
+4. new lib for section ".pcltbl" and decryption -- liboepcl.a: placed in OESDK installation lib folder
 
 ### PCL Sample Code
 A Sample Code project will be provided in samples for how to use Protected Code Loader.
