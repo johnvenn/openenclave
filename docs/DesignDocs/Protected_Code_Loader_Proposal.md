@@ -54,17 +54,22 @@ info on enclave loading and must remain plaintext.
 Definition of PCL entry:
 typedef struct pcl_table_t_
 {
-    pcl_status_e pcl_state;                   // Current state of PCL
-    uint32_t     reserved1[3];                // Must be 0
-    uint8_t      pcl_guid[SGX_PCL_GUID_SIZE]; // GUID must match GUID in Sealed blob
-    size_t       sealed_blob_size;            // Size of selaed blob
-    uint32_t     reserved2[2];                // Must be 0
-
-    uint8_t      sealed_blob[PCL_SEALED_BLOB_SIZE]; // For security, sealed blob is copied into enclave
-    uint8_t      decryption_key_hash[SGX_SHA256_HASH_SIZE]; // SHA256 digest of decryption key
-    uint32_t     num_rvas;                    // Number of RVAs
-    uint32_t     reserved3[3];                // Must be 0
-    rva_size_tag_iv_t rvas_sizes_tags_ivs[PCL_MAX_NUM_ENCRYPTED_SECTIONS]; // Array of rva_size_tag_iv_t
+	/* Current state of PCL: initailized to PCL_PLAIN */
+    pcl_status_e pcl_state;                   
+    uint32_t     reserved1[3];                /* Must be 0 */
+	// GUID must match GUID in Sealed blob
+    uint8_t      pcl_guid[SGX_PCL_GUID_SIZE]; 
+    size_t       sealed_blob_size;            
+    uint32_t     reserved2[2];                /* Must be 0 */
+	/* For security, sealed blob is copied into enclave */
+    uint8_t      sealed_blob[PCL_SEALED_BLOB_SIZE];
+	/* SHA256 digest of decryption key */
+    uint8_t      decryption_key_hash[SGX_SHA256_HASH_SIZE];
+	/* Number of RVAs */
+    uint32_t     num_rvas;                    
+    uint32_t     reserved3[3];                /* Must be 0 */
+	/* Array of rva_size_tag_iv_t */
+    rva_size_tag_iv_t rvas_sizes_tags_ivs[PCL_MAX_NUM_ENCRYPTED_SECTIONS]; 
 }pcl_table_t;
 
 ### Sections left plaintext
