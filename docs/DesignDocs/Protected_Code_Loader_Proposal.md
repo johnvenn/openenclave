@@ -36,17 +36,20 @@ to user.
 ## Protected Code Loader Software Work Flow in Open Enclave
 ### Build time encryption 
     A seperate tool "oeencrypt" is provided at enclave build time to encrypt 
-	the enclave image right before enclave signing process,  
-### load time decryption
+	the enclave image right before enclave signing process.  
+### Load time decryption
     On enclave initliazation operation(EINIT operation), right before relocation, 
     the encrypted enclave image need to be decrypted and than perform the relocation
     operation.
 
+## Encryption Algorithm in Protected Code Loader
+Using openssl AES-256-GCM as the encryption/decryption algorithm.
+
 ## ELF sections Left plaintext
 ### PCL table entry 
-A PCL table entry (a section called ".pcltbl" in ELF file)is built into the Enclave image by 
-linking to PCL lib, this part contains enclave decryption info on enclave loading and must 
-remain plaintext
+A PCL table entry (a section called ".pcltbl" in ELF file)is built into the Enclave 
+image by linking to PCL lib, i.e. liboepcl.a, this part contains enclave decryption
+info on enclave loading and must remain plaintext.
 
 Definition of PCL entry:
 typedef struct pcl_table_t_
@@ -56,6 +59,7 @@ typedef struct pcl_table_t_
     uint8_t      pcl_guid[SGX_PCL_GUID_SIZE]; // GUID must match GUID in Sealed blob
     size_t       sealed_blob_size;            // Size of selaed blob
     uint32_t     reserved2[2];                // Must be 0
+
     uint8_t      sealed_blob[PCL_SEALED_BLOB_SIZE]; // For security, sealed blob is copied into enclave
     uint8_t      decryption_key_hash[SGX_SHA256_HASH_SIZE]; // SHA256 digest of decryption key
     uint32_t     num_rvas;                    // Number of RVAs
@@ -88,9 +92,6 @@ Mainly those sections are:
 3. Read-only Data sections -- .rodata in elf file (const variables)
 4. sections containing relocation info related with the above items
 
-## Encryption Algorithms in Protected Code Loader
-Using openssl AES-256-GCM as the encryption/decryption algorithm.
-
 ## Sealing/Unsealing the decryption key
 To deliver the decryption key in a secure way, the key used to encrypt the enclave should get sealed
 by key policy PRODUCT
@@ -102,7 +103,7 @@ we can provide an open feed for the ISVs to feed their own sealing/unsealing fun
 encryption tool and decryption part in enclave. This need to be considered in another seperate topic. 
 We can also refer to Open Enclave's current data-sealing sample. 
 
-## new arguments, APIs and libs
+## new APIs and libs
 ### Encryption tool
 new tool for ELF image encryption - oeencrypt: placed in OESDK installation folder as the bin files
 new lib for section ".pcltbl" and decryption -- liboepcl.a: placed in OESDK installation folderd
