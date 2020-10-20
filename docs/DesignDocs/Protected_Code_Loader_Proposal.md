@@ -12,8 +12,6 @@ secret data embedded in the enclave image.
 The Open Enclave Protected Code Loader shall enable providing confidentiality 
 and integrity to the IP sections in enclave image, i.e. , the ELF file.
 
-TODO: add an svg image here to describe the encryption and decryption process.
-
 # User Experience
 ## Enclave Build-time:
 ### Linking pcl lib to the enclave 
