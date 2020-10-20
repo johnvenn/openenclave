@@ -51,7 +51,7 @@ A PCL table entry (a section called ".pcltbl" in ELF file)is built into the Encl
 image by linking to PCL lib, i.e. liboepcl.a, this part contains enclave decryption
 info on enclave loading and must remain plaintext.
 
-Definition of PCL entry:
+Definition of PCL entry(section ".pcltbl"):
 typedef struct pcl_table_t_
 {
 	/* Current state of PCL: initailized to PCL_PLAIN */
@@ -112,10 +112,33 @@ as the lib files
 No new APIs exposed to user.
 1. A new setting is defined in include/openenclave/host.h as the argument to support
 protected code loader enclave loading in API oe_create_enclave.
-	
+typedef enum _oe_enclave_setting_type
+{
+	// PCL setting type
+	OE_ENCLAVE_SETTING_PCL = 0xac120002,
+	...
+} oe_enclave_setting_type_t;
+
+typedef struct _oe_enclave_setting
+{
+    oe_enclave_setting_type_t setting_type;
+    /**
+     * The specific setting for the enclave, such as for configuring
+     * context-switchless calls.
+     */
+    union {
+		/* for protected code loader */
+		uint8_t* sealed_blob;
+	} u;
+} oe_enclave_setting_t;
 2. uint8_t *sealed_blob is defined as new member for each instance oe_enclave_t.
-3. oe_enclave_ecall_ms_t is defined as the arg_in of ecall on the 1st time of initializing an encrypted
-enclave.
+3. oe_enclave_ecall_ms_t in bits/sgx/sgxtypes.h is defined as the arg_in of ecall on the 1st time
+of initializing an encrypted enclave.
+	typedef struct _oe_sgx_ecall_ms
+	{
+		uint64_t arg1;
+		uint64_t sealed_blob;
+	} oe_sgx_ecall_ms_t;
 4. new lib for section ".pcltbl" and decryption -- liboepcl.a: placed in OESDK installation lib folder
 
 ### PCL Sample Code
