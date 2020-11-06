@@ -486,6 +486,11 @@ static oe_result_t _configure_enclave(
                 break;
             }
 #endif
+			case OE_ENCLAVE_SETTING_PCL:
+			{
+				//nothing
+				break;
+			}
             default:
                 OE_RAISE(OE_INVALID_PARAMETER);
         }
@@ -998,11 +1003,14 @@ oe_result_t oe_create_enclave(
         }
 #endif
 
+	OE_CHECK(oe_sgx_build_enclave(&context, enclave_path, NULL, enclave));
+// this step should be done after sgx_build_enclave, the enclave instance is
+// built
 	for (size_t i = 0; i < setting_count; i++)
 	{  
 		if (settings[i].setting_type == OE_ENCLAVE_SETTING_PCL)
         {
-            enclave->sealed_blob = sealed_blob;
+            enclave->sealed_blob = settings[i].u.sealed_blob;
             break;
         } else
 		{
@@ -1010,7 +1018,6 @@ oe_result_t oe_create_enclave(
 		}    /* Build the enclave */
 	}
 
-	OE_CHECK(oe_sgx_build_enclave(&context, enclave_path, NULL, enclave));
 
     /* Push the new created enclave to the global list. */
     if (oe_push_enclave_instance(enclave) != 0)
