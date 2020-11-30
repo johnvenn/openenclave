@@ -52,7 +52,7 @@
 #define PCL_DATA_SECTION_NAME              ".nipd"
 #define PCL_RODATA_SECTION_NAME            ".niprod"
 
-#define NUM_NON_IP_OR_DEBUG_SEC_NAMES (26)
+#define NUM_NON_IP_OR_DEBUG_SEC_NAMES (29)
 #define NUM_NON_IP_SEC_NAMES (13)
 
 /*

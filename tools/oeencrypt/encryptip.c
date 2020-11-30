@@ -132,6 +132,7 @@ static inline bool can_modify(IN const char* const sec_name, bool debug)
      */
     static char const* const non_ip_sec_names[NUM_NON_IP_OR_DEBUG_SEC_NAMES] = 
     {
+		".interp",
         ".shstrtab",             // Sections' names string table. Pointed by e_shstrndx
         ".oeinfo",         // OE enclave metadata    
         ".bss",                  // Inited with zero - no IP. Section may overlap other sections
