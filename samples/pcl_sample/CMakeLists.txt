@@ -9,7 +9,7 @@ if (LVI_MITIGATION MATCHES ControlFlow)
   find_package(OpenEnclave-LVI-Mitigation CONFIG REQUIRED)
 endif ()
 
-project("Hello World Sample" LANGUAGES C CXX)
+project("Protected Code Loader Sample" LANGUAGES C CXX)
 
 # Currently the `OpenEnclave` package depends on `project()`.
 find_package(OpenEnclave CONFIG REQUIRED)
@@ -28,20 +28,36 @@ add_custom_command(
 # Sign enclave
 add_custom_command(
   OUTPUT enclave/enclave.signed
-  DEPENDS enclave enclave/helloworld.conf private.pem
-  COMMAND openenclave::oesign sign -e $<TARGET_FILE:enclave> -c
-          ${CMAKE_SOURCE_DIR}/enclave/helloworld.conf -k private.pem)
+  DEPENDS enclave enclave/pcl.conf private.pem
+  COMMAND openenclave::oesign sign -e enclave/enclave -c
+          ${CMAKE_SOURCE_DIR}/enclave/pcl.conf -k private.pem)
 
-add_custom_target(sign ALL DEPENDS enclave/enclave.signed)
+#Encrypt Enclave
+add_custom_command(
+  OUTPUT enclave/enclave.enc
+  DEPENDS enclave
+  COMMAND openenclave::oeencrypt -i enclave/enclave -o enclave/enclave.enc -k
+		  ${CMAKE_SOURCE_DIR}/enclave/debug_mock_128bit_key.bin -d)
+
+add_custom_command(
+  OUTPUT enclave/enclave.enc.signed
+  DEPENDS enclave enclave/pcl.conf private.pem
+  COMMAND openenclave::oesign sign -e enclave/enclave.enc -c
+	     ${CMAKE_SOURCE_DIR}/enclave/pcl.conf -k private.pem)
+
+add_custom_target(encrypt ALL DEPENDS enclave/enclave.enc)
+
+#add_custom_target(sign ALL DEPENDS enclave/enclave.signed)
+add_custom_target(sign ALL DEPENDS enclave/enclave.signed enclave/enclave.enc.signed)
 
 if ((NOT DEFINED ENV{OE_SIMULATION}) OR (NOT $ENV{OE_SIMULATION}))
   add_custom_target(
     run
-    DEPENDS helloworld_host sign
-    COMMAND helloworld_host ${CMAKE_BINARY_DIR}/enclave/enclave.signed)
+    DEPENDS pcl_host sign
+    COMMAND pcl_host ${CMAKE_BINARY_DIR}/enclave/enclave.signed)
 endif ()
 
 add_custom_target(
   simulate
-  DEPENDS helloworld_host sign
-  COMMAND helloworld_host ${CMAKE_BINARY_DIR}/enclave/enclave.signed --simulate)
+  DEPENDS pcl_host sign
+  COMMAND pcl_host ${CMAKE_BINARY_DIR}/enclave/enclave.signed --simulate)
