@@ -35,6 +35,7 @@
 //==============================================================================
 
 .globl oe_enter
+.section .nipx,"ax",@progbits
 .type oe_enter, @function
 oe_enter:
 .cfi_startproc
@@ -296,6 +297,7 @@ oe_enter:
 #define ED_SAVED_RSP         (2*8)(%rbp)
 
 .globl oe_exception_dispatcher
+.section .nipx,"ax",@progbits
 .type oe_exception_dispatcher, @function
 oe_exception_dispatcher:
 .cfi_startproc
